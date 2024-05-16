@@ -1,6 +1,11 @@
 import { createThirdwebClient } from "thirdweb";
 import "./App.css";
-import { useConnect } from "thirdweb/react";
+import {
+  ConnectButton,
+  useActiveAccount,
+  useActiveWallet,
+  useConnect,
+} from "thirdweb/react";
 import { createWallet, injectedProvider, WalletId } from "thirdweb/wallets";
 import { useState } from "react";
 
@@ -37,6 +42,8 @@ const walletOptions: WalletOption[] = [
 function App() {
   const { connect, isConnecting, error } = useConnect();
   const [selectedWalletId, setSelectedWalletId] = useState<WalletId>();
+  const account = useActiveAccount();
+  const connectedWallet = useActiveWallet();
 
   const connectWithWallet = (walletId: WalletId) => {
     connect(async () => {
@@ -62,39 +69,63 @@ function App() {
 
   return (
     <>
-      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-        {walletOptions.map((wallet) => (
-          <button
-            key={wallet.walletId}
-            // Disable the buttons during the connecting process
-            disabled={isConnecting}
-            onClick={() => {
-              connectWithWallet(wallet.walletId);
-              setSelectedWalletId(wallet.walletId);
-            }}
-          >
-            {isConnecting && selectedWalletId === wallet.walletId
-              ? "Connecting..."
-              : `Connect with ${wallet.name}`}
-          </button>
-        ))}
-      </div>
+      {account ? (
+        <>
+          <ConnectButton client={client} />
+          {connectedWallet && (
+            <div
+              style={{
+                marginTop: "12px",
+                textAlign: "left",
+                border: "1px solid black",
+                padding: "4px",
+                maxWidth: "251px",
+              }}
+            >
+              <div>Connected wallet:</div>
+              <pre style={{ overflowX: "auto" }}>
+                {JSON.stringify(connectedWallet, null, 2)}
+              </pre>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+            {walletOptions.map((wallet) => (
+              <button
+                key={wallet.walletId}
+                // Disable the buttons during the connecting process
+                disabled={isConnecting}
+                onClick={() => {
+                  connectWithWallet(wallet.walletId);
+                  setSelectedWalletId(wallet.walletId);
+                }}
+              >
+                {isConnecting && selectedWalletId === wallet.walletId
+                  ? "Connecting..."
+                  : `Connect with ${wallet.name}`}
+              </button>
+            ))}
+          </div>
 
-      {error && Object.keys(error).length > 0 && (
-        <div
-          style={{
-            marginTop: "12px",
-            textAlign: "left",
-            border: "1px solid black",
-            padding: "4px",
-            maxWidth: "251px",
-          }}
-        >
-          <div>Error:</div>
-          <pre style={{ overflowX: "auto" }}>
-            {JSON.stringify(error, null, 2)}
-          </pre>
-        </div>
+          {error && Object.keys(error).length > 0 && (
+            <div
+              style={{
+                marginTop: "12px",
+                textAlign: "left",
+                border: "1px solid black",
+                padding: "4px",
+                maxWidth: "251px",
+              }}
+            >
+              <div>Error:</div>
+              <pre style={{ overflowX: "auto" }}>
+                {JSON.stringify(error, null, 2)}
+              </pre>
+            </div>
+          )}
+        </>
       )}
     </>
   );
