@@ -66,15 +66,36 @@ function App() {
         {walletOptions.map((wallet) => (
           <button
             key={wallet.walletId}
+            // Disable the buttons during the connecting process
+            disabled={isConnecting}
             onClick={() => {
               connectWithWallet(wallet.walletId);
               setSelectedWalletId(wallet.walletId);
             }}
           >
-            Connect with {wallet.name}
+            {isConnecting && selectedWalletId === wallet.walletId
+              ? "Connecting..."
+              : `Connect with ${wallet.name}`}
           </button>
         ))}
       </div>
+
+      {error && Object.keys(error).length > 0 && (
+        <div
+          style={{
+            marginTop: "12px",
+            textAlign: "left",
+            border: "1px solid black",
+            padding: "4px",
+            maxWidth: "251px",
+          }}
+        >
+          <div>Error:</div>
+          <pre style={{ overflowX: "auto" }}>
+            {JSON.stringify(error, null, 2)}
+          </pre>
+        </div>
+      )}
     </>
   );
 }
