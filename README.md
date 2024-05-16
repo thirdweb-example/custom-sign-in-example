@@ -27,7 +27,7 @@ Start the server
 
 ## Documentation
 
-- [Custom Sign-In](
+- [Custom Sign-In](https://portal.thirdweb.com/connect/sign-in/Custom-UI)
 - [TypeScript SDK](https://portal.thirdweb.com/typescript/latest)
 
 ## Contributing
